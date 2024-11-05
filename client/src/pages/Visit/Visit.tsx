@@ -17,8 +17,10 @@ const Visit: React.FC = (): JSX.Element => {
     comments: "",
   });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [message, setMessage] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{
+    [key: string]: string;
+  }>({});
+  const [apiErrors, setApiErrors] = useState<string | null>(null);
 
   const calculateBmi = (height: string, weight: string) => {
     if (height && weight) {
@@ -48,11 +50,11 @@ const Visit: React.FC = (): JSX.Element => {
     e.preventDefault();
 
     if (!formData.height) {
-      setErrors({ height: "Height is required" });
+      setFormErrors({ height: "Height is required" });
     }
 
     if (!formData.weight) {
-      setErrors({ weight: "Weight is required" });
+      setFormErrors({ weight: "Weight is required" });
     }
     const data = {
       ...formData,
@@ -68,15 +70,24 @@ const Visit: React.FC = (): JSX.Element => {
       });
 
       if (response.ok) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const responseData = await response.json();
-        setMessage("Data has been saved successfully.");
+        setFormData({
+          date: currentDate,
+          height: "",
+          weight: "",
+          bmi: "",
+          generalHealth: "",
+          dietedBefore: "",
+          takingDrugs: "",
+          comments: "",
+        });
+
+        navigate("/patient-listing");
       } else {
-        setMessage("Data has not been sent. Please try again.");
+        setApiErrors("Data has not been sent. Please try again.");
         console.error(response.statusText);
       }
     } catch (error) {
-      setMessage("Error submitting form. Please try again.");
+      setApiErrors("Error submitting form. Please try again.");
       console.error("Error submitting form:", error);
     }
   };
@@ -116,11 +127,12 @@ const Visit: React.FC = (): JSX.Element => {
               type="text"
               name="height"
               id="height"
+              value={formData.height}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             />
-            {errors.height && (
-              <p className="text-red-600 text-sm">{errors.height}</p>
+            {formErrors.height && (
+              <p className="text-red-600 text-sm">{formErrors.height}</p>
             )}
           </div>
           <div>
@@ -134,11 +146,12 @@ const Visit: React.FC = (): JSX.Element => {
               type="text"
               name="weight"
               id="weight"
+              value={formData.weight}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             />
-            {errors.weight && (
-              <p className="text-red-600 text-sm">{errors.weight}</p>
+            {formErrors.weight && (
+              <p className="text-red-600 text-sm">{formErrors.weight}</p>
             )}
           </div>
           <div>
@@ -304,15 +317,17 @@ const Visit: React.FC = (): JSX.Element => {
               </div>
             )}
           </div>
-          {message && (
+          {apiErrors && (
             <div
-              className={`mb-4 text-center ${
-                message.includes("successfully")
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
+              className={`mb-4 p-4 border rounded-lg text-center flex items-center justify-between bg-red-100 border-red-400 text-red-600`}
             >
-              {message}
+              <span>{apiErrors}</span>
+              <button
+                onClick={() => setApiErrors("")}
+                className="ml-4 px-3 py-1 text-sm font-semibold rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 focus:outline-none focus:ring focus:ring-gray-400"
+              >
+                Close
+              </button>
             </div>
           )}
           <button

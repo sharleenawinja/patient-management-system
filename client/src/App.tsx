@@ -1,6 +1,6 @@
 import React from "react";
-import RegistrationPage from "./pages/Registration/Registration";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import RegistrationPage from "./pages/Registration/Registration";
 import Visit from "./pages/Visit/Visit";
 import PatientReport from "./pages/PatientReport/PatientReport";
 import Home from "./pages/Home/Home";
