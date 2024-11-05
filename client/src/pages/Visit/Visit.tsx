@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const VitalsPage: React.FC = (): JSX.Element => {
+const Visit: React.FC = (): JSX.Element => {
   const [bmi, setbmi] = useState(20);
   const currentDate = new Date().toISOString().split("T")[0];
 
@@ -212,4 +212,4 @@ const VitalsPage: React.FC = (): JSX.Element => {
   );
 };
 
-export default VitalsPage;
+export default Visit;

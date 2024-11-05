@@ -1,11 +1,16 @@
 import React from "react";
-import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
+import RegistrationPage from "./pages/Registration/Registration";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Visit from "./pages/Visit/Visit";
 
 const App: React.FC = (): JSX.Element => {
   return (
-    <>
-      <RegistrationPage />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="" element={<RegistrationPage />} />
+        <Route path="/visit" element={<Visit />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

@@ -1,7 +1,57 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+
+interface PatientFormData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
+}
 
 const RegistrationPage: React.FC = (): JSX.Element => {
+  const navigate = useNavigate();
   const currentDate = new Date().toISOString().split("T")[0];
+
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required("First name is required."),
+    lastName: Yup.string().required("Last name is required."),
+    dateOfBirth: Yup.string().required("Date of birth is required."),
+    gender: Yup.string().required("Gender is required."),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      dateOfBirth: currentDate,
+    },
+  });
+
+  const onSubmit = async (data: PatientFormData) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/patient", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        navigate("/visit");
+      } else {
+        console.error("Registration failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -9,7 +59,7 @@ const RegistrationPage: React.FC = (): JSX.Element => {
         <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
           Registration Page
         </h2>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label
               htmlFor="firstName"
@@ -19,10 +69,13 @@ const RegistrationPage: React.FC = (): JSX.Element => {
             </label>
             <input
               type="text"
-              name="firstName"
               id="firstName"
+              {...register("firstName")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             />
+            {errors.firstName && (
+              <p className="text-red-600 text-sm">{errors.firstName.message}</p>
+            )}
           </div>
           <div>
             <label
@@ -33,10 +86,13 @@ const RegistrationPage: React.FC = (): JSX.Element => {
             </label>
             <input
               type="text"
-              name="lastName"
               id="lastName"
+              {...register("lastName")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             />
+            {errors.lastName && (
+              <p className="text-red-600 text-sm">{errors.lastName.message}</p>
+            )}
           </div>
           <div>
             <label
@@ -47,11 +103,16 @@ const RegistrationPage: React.FC = (): JSX.Element => {
             </label>
             <input
               type="date"
-              name="dateOfBirth"
               id="dateOfBirth"
-              value={currentDate}
+              {...register("dateOfBirth")}
+              max={currentDate}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             />
+            {errors.dateOfBirth && (
+              <p className="text-red-600 text-sm">
+                {errors.dateOfBirth.message}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -61,14 +122,17 @@ const RegistrationPage: React.FC = (): JSX.Element => {
               Gender:
             </label>
             <select
-              name="gender"
               id="gender"
+              {...register("gender")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             >
               <option value="">Select Gender</option>
               <option value="male">M</option>
               <option value="female">F</option>
             </select>
+            {errors.gender && (
+              <p className="text-red-600 text-sm">{errors.gender.message}</p>
+            )}
           </div>
           <div className="flex justify-between mt-6">
             <button
