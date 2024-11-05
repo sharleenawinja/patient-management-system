@@ -47,7 +47,6 @@ router.post("/visit", (req, res) => {
       return res.status(201).json({
         success: true,
         message: "Visit successfully recorded.",
-        patientId: insertId,
       });
     }
   );

@@ -34,4 +34,34 @@ router.post("/patient", (req, res) => {
   );
 });
 
+router.get("/patients", (req, res) => {
+  const sql = `
+    SELECT 
+      p.first_name AS firstName, 
+      p.last_name AS lastName, 
+      v.bmi,
+      v.entry_date AS entryDate,
+      TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) AS age
+    FROM Patients p 
+    JOIN Visits v ON p.id = v.patient_id
+  `;
+
+  con.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: err,
+      });
+    }
+
+    console.log(results);
+
+    return res.status(200).json({
+      success: true,
+      results,
+    });
+  });
+});
 export { router as patientRouter };
