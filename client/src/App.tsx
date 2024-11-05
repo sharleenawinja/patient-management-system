@@ -8,7 +8,7 @@ const App: React.FC = (): JSX.Element => {
     <BrowserRouter>
       <Routes>
         <Route path="" element={<RegistrationPage />} />
-        <Route path="/visit" element={<Visit />} />
+        <Route path="/visit/:patientId" element={<Visit />} />
       </Routes>
     </BrowserRouter>
   );

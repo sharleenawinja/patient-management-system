@@ -44,7 +44,9 @@ const RegistrationPage: React.FC = (): JSX.Element => {
       });
 
       if (response.ok) {
-        navigate("/visit");
+        const responseData = await response.json();
+        console.log(responseData);
+        navigate(`/visit/${responseData.patientId}`);
       } else {
         console.error("Registration failed:", response.statusText);
       }
