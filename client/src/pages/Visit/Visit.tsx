@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Visit: React.FC = (): JSX.Element => {
   const { patientId } = useParams();
+  const navigate = useNavigate();
   const currentDate = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ const Visit: React.FC = (): JSX.Element => {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [message, setMessage] = useState<string | null>(null);
 
   const calculateBmi = (height: string, weight: string) => {
     if (height && weight) {
@@ -54,9 +56,8 @@ const Visit: React.FC = (): JSX.Element => {
     }
     const data = {
       ...formData,
-      patientId: patientId,
+      patientId,
     };
-
     try {
       const response = await fetch("http://localhost:3000/api/visit", {
         method: "POST",
@@ -67,12 +68,15 @@ const Visit: React.FC = (): JSX.Element => {
       });
 
       if (response.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const responseData = await response.json();
-        console.log(responseData);
+        setMessage("Data has been saved successfully.");
       } else {
+        setMessage("Data has not been sent. Please try again.");
         console.error(response.statusText);
       }
     } catch (error) {
+      setMessage("Error submitting form. Please try again.");
       console.error("Error submitting form:", error);
     }
   };
@@ -83,6 +87,7 @@ const Visit: React.FC = (): JSX.Element => {
         <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
           Vitals
         </h2>
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
@@ -95,7 +100,7 @@ const Visit: React.FC = (): JSX.Element => {
               type="date"
               name="date"
               id="date"
-              value={currentDate}
+              value={formData.date}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             />
@@ -299,11 +304,29 @@ const Visit: React.FC = (): JSX.Element => {
               </div>
             )}
           </div>
+          {message && (
+            <div
+              className={`mb-4 text-center ${
+                message.includes("successfully")
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {message}
+            </div>
+          )}
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-400"
+            className="px-4 mr-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-400"
           >
             Save
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400"
+            onClick={() => navigate("/")}
+          >
+            Home Page
           </button>
         </form>
       </div>

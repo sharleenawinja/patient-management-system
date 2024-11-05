@@ -45,7 +45,6 @@ const RegistrationPage: React.FC = (): JSX.Element => {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData);
         navigate(`/visit/${responseData.patientId}`);
       } else {
         console.error("Registration failed:", response.statusText);
@@ -140,8 +139,9 @@ const RegistrationPage: React.FC = (): JSX.Element => {
             <button
               type="button"
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400"
+              onClick={() => navigate("/")}
             >
-              Clear
+              Home Page
             </button>
             <button
               type="submit"
